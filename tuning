@@ -1,0 +1,11 @@
+#!/bin/bash
+
+for i in {1..8}; do
+    mkdir model/tuning_c2w/${i}
+    mkdir result/tuning_c2w/${i}
+    cp hyperparams/settings_${i}.py settings.py
+    python char.py data/sample_min1k_max4k/combined_tags/train data/sample_min1k_max4k/combined_tags/val model/tuning_c2w/${i}/ > logs/tuning_c2w_${i}.log
+    python test.py data/sample_min1k_max4k/combined_tags/combined_test model/tuning_c2w/${i}/ result/tuning_c2w/${i}/
+    echo "\nExperiment ${i} \n" >> result/tuning_c2w/all.log
+    python eval.py result/tuning_c2w/${i}/ model/tuning_c2w/${i}/ >> result/tuning_c2w/all.log
+done
