@@ -24,7 +24,7 @@ def char2word2vec(batch, mask, params, n_char=N_CHAR):
     seqs_mask = mask[:,:,0]
 
     l_in_w2s = lasagne.layers.ReshapeLayer(c2w_net, (batch.shape[0],MAX_SEQ_LENGTH,WDIM), name='w2s_input')
-    l_mask_w2s = lasagne.layers.InputLayer(shape=(batch.shape[0],MAX_SEQ_LENGTH), input_var=seqs_mask, name='w2s_mask')
+    l_mask_w2s = lasagne.layers.InputLayer(shape=(None,MAX_SEQ_LENGTH), input_var=seqs_mask, name='w2s_mask')
     # sequence embeddings
     seq_emb, w2s_net = word2seq(l_in_w2s,l_mask_w2s,params,'w2s_')
 
