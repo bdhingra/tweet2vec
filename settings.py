@@ -17,9 +17,9 @@ C2W_HDIM = 150
 # Dimensionality of word vectors
 WDIM = 150
 # Number of classes
-MAX_CLASSES = 5000
+MAX_CLASSES = 6000
 # Learning rate
-LEARNING_RATE = .01
+LEARNING_RATE = .001
 # Display frequency
 DISPF = 5
 # Save frequency
@@ -29,8 +29,8 @@ N_VAL = 512
 # Regularization
 REGULARIZATION = 0
 # Reload
-RELOAD_DATA = False
-RELOAD_MODEL = False
+RELOAD_DATA = True
+RELOAD_MODEL = True
 # Maximum word length
 MAX_WORD_LENGTH = 8
 # Maximum sequence length
@@ -42,4 +42,4 @@ W2S_HDIM = 150
 # Debugging
 DEBUG=False
 # NAG
-MOMENTUM = 0.9
+MOMENTUM = 0.8

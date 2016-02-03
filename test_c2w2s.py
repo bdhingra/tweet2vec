@@ -91,10 +91,11 @@ def main(args):
         x, x_m = batch.prepare_data_c2w2s(xr, chardict, n_chars=n_char)
         p = predict(x,x_m)
         e = encode(x,x_m)
+        ranks = np.argsort(p)[:,::-1]
 
         for idx, item in enumerate(xr):
             out_data.append(item)
-            out_pred.append(p[idx,:])
+            out_pred.append(ranks[idx,:])
             out_emb.append(e[idx,:])
             out_target.append(y[idx])
 
@@ -102,10 +103,10 @@ def main(args):
     print("Saving...")
     with open('%s/data.pkl'%save_path,'w') as f:
         pkl.dump(out_data,f)
-    with open('%s/predictions.pkl'%save_path,'w') as f:
-        pkl.dump(out_pred,f)
-    with open('%s/embeddings.pkl'%save_path,'w') as f:
-        pkl.dump(out_emb,f)
+    with open('%s/predictions.npy'%save_path,'w') as f:
+        np.save(f,np.asarray(out_pred))
+    with open('%s/embeddings.npy'%save_path,'w') as f:
+        np.save(f,np.asarray(out_emb))
     with open('%s/targets.pkl'%save_path,'w') as f:
         pkl.dump(out_target,f)
 

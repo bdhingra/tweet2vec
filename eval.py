@@ -13,11 +13,11 @@ def precision(p, t, k):
     '''
     Compute precision @ k for predictions p and targets t
     '''
-    n = len(p)
+    n = p.shape[0]
     res = np.zeros(n)
-    for idx,item in enumerate(p):
-        index = np.argsort(item)[::-1]
-        for i in index[:k]:
+    for idx in range(n):
+        index = p[idx,:k]
+        for i in index:
             if i in t[idx]:
                 res[idx] = 1
                 break
@@ -27,10 +27,10 @@ def recall(p, t, k):
     '''
     Compute recall @ k for predictions p and targets k
     '''
-    n = len(p)
+    n = p.shape[0]
     res = np.zeros(n)
     for idx,items in enumerate(t):
-        index = np.argsort(p[idx])[::-1][:k]
+        index = p[idx,:k]
         for i in items:
             if i in index:
                 res[idx] = 1
@@ -41,10 +41,10 @@ def meanrank(p, t):
     '''
     Compute mean rank of targets in the predictions
     '''
-    n = len(p)
+    n = p.shape[0]
     res = np.zeros(n)
     for idx, items in enumerate(t):
-        ind = np.argsort(p[idx])[::-1]
+        ind = p[idx,:]
         minrank = n
         for i in items:
             currrank = np.where(ind==i)[0]
@@ -56,21 +56,21 @@ def meanrank(p, t):
 def readable_predictions(p, t, d, k, labeldict):
     out = []
     for idx, item in enumerate(d):
-        preds = np.argsort(p[idx])[::-1][:k]
+        preds = p[idx,:k]
         plabels = ','.join([labeldict.keys()[ii-1] if ii > 0 else '<unk>' for ii in preds])
         tlabels = ','.join([labeldict.keys()[ii-1] if ii > 0 else '<unk>' for ii in t[idx]])
         out.append('%s\t%s\t%s\n'%(tlabels,plabels,item))
     return out
 
 def main(result_path, dict_path):
-    with open('%s/predictions.pkl'%result_path,'r') as f:
-        p = pkl.load(f)
+    with open('%s/predictions.npy'%result_path,'r') as f:
+        p = np.load(f)
     with open('%s/targets.pkl'%result_path,'r') as f:
         t = pkl.load(f)
     with open('%s/data.pkl'%result_path,'r') as f:
         d = pkl.load(f)
-    with open('%s/embeddings.pkl'%result_path,'r') as f:
-        e = pkl.load(f)
+    with open('%s/embeddings.npy'%result_path,'r') as f:
+        e = np.load(f)
     with open('%s/label_dict.pkl'%dict_path,'r') as f:
         labeldict = pkl.load(f)
 

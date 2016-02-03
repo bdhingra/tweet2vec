@@ -285,3 +285,4 @@ def load_params_shared(path):
         for kk, vv in npzfile.iteritems():
             params[kk] = theano.shared(vv, name=kk)
 
+    return params

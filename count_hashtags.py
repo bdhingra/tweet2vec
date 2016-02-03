@@ -1,7 +1,7 @@
 import sys
 import json
 import matplotlib.pyplot as plt
-import codecs
+import io
 
 from collections import defaultdict
 
@@ -15,7 +15,7 @@ C = int(sys.argv[3])
 counts = defaultdict(int)
 total = 0
 below_thresh = 0
-with codecs.open(dictPath,'r',encoding='utf-8') as d:
+with io.open(dictPath,'r',encoding='utf-8') as d:
     for line in d:
         row = json.loads(line)
         counts[row[0]] = row[1]
