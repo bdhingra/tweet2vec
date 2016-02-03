@@ -1,5 +1,7 @@
 # Define all global params here
 
+# Set true for word-level model, false for character-level
+WORD_LEVEL = False
 # Number of epochs
 NUM_EPOCHS = 30
 # Batch size
