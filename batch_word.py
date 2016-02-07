@@ -43,7 +43,7 @@ class BatchTweets():
         curr_batch_size = np.minimum(self.batch_size, self.curr_remaining)
 
         # indices for current batch
-        curr_indices = np.arange(self.curr_pos, self.curr_pos + curr_batch_size)
+        curr_indices = self.curr_indices[self.curr_pos:self.curr_pos+curr_batch_size]
         self.curr_pos += curr_batch_size
         self.curr_remaining -= curr_batch_size
 
