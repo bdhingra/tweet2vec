@@ -16,7 +16,7 @@ import shutil
 
 from collections import OrderedDict
 from t2v import char2word2vec, init_params_c2w2s, load_params_shared
-from settings import NUM_EPOCHS, N_BATCH, MAX_LENGTH, N_CHAR, SCALE, SDIM, MAX_CLASSES, LEARNING_RATE, DISPF, SAVEF, REGULARIZATION, RELOAD_DATA, RELOAD_MODEL, DEBUG, MOMENTUM
+from settings import NUM_EPOCHS, N_BATCH, MAX_LENGTH, N_CHAR, SCALE, SDIM, MAX_CLASSES, LEARNING_RATE, DISPF, SAVEF, REGULARIZATION, RELOAD_DATA, RELOAD_MODEL, DEBUG, MOMENTUM, TRANSFER
 
 def tnorm(tens):
     '''
@@ -108,6 +108,14 @@ def main(train_path,val_path,save_path,num_epochs=NUM_EPOCHS):
 
         # params
         params = init_params_c2w2s(n_chars=n_char)
+        
+        # transfer
+        if TRANSFER != None:
+            oparams = load_params_shared(TRANSFER)
+            for kk,vv in params.iteritems():
+                params[kk].set_value(oparams[kk].get_value())
+
+        # classification params
         params['W_cl'] = theano.shared(np.random.normal(loc=0., scale=SCALE, size=(SDIM,n_classes)).astype('float32'), name='W_cl')
         params['b_cl'] = theano.shared(np.zeros((n_classes)).astype('float32'), name='b_cl')
 

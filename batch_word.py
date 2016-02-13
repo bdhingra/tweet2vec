@@ -83,9 +83,9 @@ def prepare_data(seqs_x, tokendict, n_tokens=1000):
     seqsX = []
     for cc in seqs_x:
         if (WORD_LEVEL):
-            seqsX.append([tokendict[c] if c in tokendict and tokendict[c] <= n_tokens else 0 for c in cc.split()])
+            seqsX.append([tokendict[c] if c in tokendict and tokendict[c] < n_tokens else 0 for c in cc.split()[:MAX_LENGTH]])
         else:
-            seqsX.append([tokendict[c] if c in tokendict and tokendict[c] <= n_tokens else 0 for c in list(cc)])
+            seqsX.append([tokendict[c] if c in tokendict and tokendict[c] < n_tokens else 0 for c in list(cc)[:MAX_LENGTH]])
     seqs_x = seqsX
 
     lengths_x = [len(s) for s in seqs_x]

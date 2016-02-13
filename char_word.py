@@ -8,7 +8,7 @@ import theano
 import theano.tensor as T
 import random
 import sys
-import batch
+import batch_word as batch
 import time
 import cPickle as pkl
 import io
@@ -51,7 +51,7 @@ def main(train_path,val_path,save_path,num_epochs=NUM_EPOCHS):
         with io.open(train_path,'r',encoding='utf-8') as f:
             for line in f:
                 (yc, Xc) = line.rstrip('\n').split('\t')
-                Xt.append(Xc[:MAX_LENGTH])
+                Xt.append(Xc)
                 yt.append(yc)
 
         # Validation data
@@ -60,7 +60,7 @@ def main(train_path,val_path,save_path,num_epochs=NUM_EPOCHS):
         with io.open(val_path,'r',encoding='utf-8') as f:
             for line in f:
                 (yc, Xc) = line.rstrip('\n').split('\t')
-                Xv.append(Xc[:MAX_LENGTH])
+                Xv.append(Xc)
                 yv.append(yc)
 
         with open('%s/train_data.pkl'%(save_path),'w') as f:
@@ -81,14 +81,14 @@ def main(train_path,val_path,save_path,num_epochs=NUM_EPOCHS):
     if not RELOAD_MODEL:
         # Build dictionaries from training data
         tokendict, tokencount = batch.build_dictionary(Xt)
-        n_token = len(tokendict.keys()) + 1
+        n_token = min(len(tokendict.keys()) + 1, N_CHAR)
         batch.save_dictionary(tokendict,tokencount,'%s/dict.pkl' % save_path)
         labeldict, labelcount = batch.build_label_dictionary(yt)
         n_classes = min(len(labeldict.keys()) + 1, MAX_CLASSES)
         batch.save_dictionary(labeldict, labelcount, '%s/label_dict.pkl' % save_path)
 
         # params
-        params = init_params(n_tokens=n_token)
+        params = init_params(n_chars=n_token)
         params['W_cl'] = theano.shared(np.random.normal(loc=0., scale=SCALE, size=(WDIM,n_classes)).astype('float32'), name='W_cl')
         params['b_cl'] = theano.shared(np.zeros((n_classes)).astype('float32'), name='b_cl')
 
@@ -101,7 +101,7 @@ def main(train_path,val_path,save_path,num_epochs=NUM_EPOCHS):
             tokendict = pkl.load(f)
         with open('%s/label_dict.pkl' % save_path, 'rb') as f:
             labeldict = pkl.load(f)
-        n_token = len(tokendict.keys()) + 1
+        n_token = min(len(tokendict.keys()) + 1, N_CHAR)
         n_classes = min(len(labeldict.keys()) + 1, MAX_CLASSES)
 
     # iterators
