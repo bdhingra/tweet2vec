@@ -45,7 +45,7 @@ def meanrank(p, t):
     res = np.zeros(n)
     for idx, items in enumerate(t):
         ind = p[idx,:]
-        minrank = n
+        minrank = p.shape[1]
         for i in items:
             currrank = np.where(ind==i)[0]
             if currrank < minrank:
