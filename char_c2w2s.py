@@ -98,22 +98,25 @@ def main(train_path,val_path,save_path,num_epochs=NUM_EPOCHS):
             yv = pkl.load(f)
 
     if not RELOAD_MODEL:
-        # Build dictionaries from training data
-        chardict, charcount = batch.build_dictionary(Xt)
-        n_char = len(chardict.keys()) + 1
-        batch.save_dictionary(chardict,charcount,'%s/dict.pkl' % save_path)
-        labeldict, labelcount = batch.build_label_dictionary(yt)
-        n_classes = min(len(labeldict.keys()) + 1, MAX_CLASSES)
-        batch.save_dictionary(labeldict, labelcount, '%s/label_dict.pkl' % save_path)
-
-        # params
-        params = init_params_c2w2s(n_chars=n_char)
-        
         # transfer
         if TRANSFER != None:
-            oparams = load_params_shared(TRANSFER)
-            for kk,vv in params.iteritems():
-                params[kk].set_value(oparams[kk].get_value())
+            params = load_params_shared(TRANSFER)
+            with open('%s/dict.pkl' % TRANSFER.rsplit('/',1)[0], 'rb') as f:
+                chardict = pkl.load(f)
+            n_char = len(chardict.keys()) + 1
+            shutil.copyfile('%s/dict.pkl' % TRANSFER.rsplit('/',1)[0], '%s/dict.pkl' % save_path)
+        else:
+            # Build dictionaries from training data
+            chardict, charcount = batch.build_dictionary(Xt)
+            n_char = len(chardict.keys()) + 1
+            batch.save_dictionary(chardict,charcount,'%s/dict.pkl' % save_path)
+            # params
+            params = init_params_c2w2s(n_chars=n_char)
+        
+        labeldict, labelcount = batch.build_label_dictionary(yt)
+        batch.save_dictionary(labeldict, labelcount, '%s/label_dict.pkl' % save_path)
+
+        n_classes = min(len(labeldict.keys()) + 1, MAX_CLASSES)
 
         # classification params
         params['W_cl'] = theano.shared(np.random.normal(loc=0., scale=SCALE, size=(SDIM,n_classes)).astype('float32'), name='W_cl')
