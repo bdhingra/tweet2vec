@@ -19,9 +19,8 @@ def precision(p, t, k):
         index = p[idx,:k]
         for i in index:
             if i in t[idx]:
-                res[idx] = 1
-                break
-    return np.sum(res)/n
+                res[idx] += 1
+    return np.sum(res)/(n*k)
 
 def recall(p, t, k):
     '''
@@ -33,8 +32,8 @@ def recall(p, t, k):
         index = p[idx,:k]
         for i in items:
             if i in index:
-                res[idx] = 1
-                break
+                res[idx] += 1
+        res[idx] = res[idx] / len(items)
     return np.sum(res)/n
 
 def meanrank(p, t):
@@ -45,9 +44,9 @@ def meanrank(p, t):
     res = np.zeros(n)
     for idx, items in enumerate(t):
         ind = p[idx,:]
-        minrank = p.shape[1]
+        minrank = p.shape[1]+1
         for i in items:
-            currrank = np.where(ind==i)[0]
+            currrank = np.where(ind==i)[0]+1
             if currrank < minrank:
                 minrank = currrank
         res[idx] = minrank
