@@ -16,7 +16,7 @@ import shutil
 
 from collections import OrderedDict
 from t2v import tweet2vec, init_params, load_params_shared
-from settings import NUM_EPOCHS, N_BATCH, MAX_LENGTH, N_CHAR, CHAR_DIM, SCALE, C2W_HDIM, WDIM, MAX_CLASSES, LEARNING_RATE, DISPF, SAVEF, N_VAL, REGULARIZATION, RELOAD_DATA, RELOAD_MODEL, DEBUG, MOMENTUM
+from settings import NUM_EPOCHS, N_BATCH, MAX_LENGTH, N_CHAR, CHAR_DIM, SCALE, C2W_HDIM, WDIM, MAX_CLASSES, LEARNING_RATE, DISPF, SAVEF, N_VAL, REGULARIZATION, RELOAD_DATA, RELOAD_MODEL, DEBUG, MOMENTUM, TRANSFER
 
 def tnorm(tens):
     '''
@@ -79,16 +79,27 @@ def main(train_path,val_path,save_path,num_epochs=NUM_EPOCHS):
             yv = pkl.load(f)
 
     if not RELOAD_MODEL:
-        # Build dictionaries from training data
-        chardict, charcount = batch.build_dictionary(Xt)
-        n_char = len(chardict.keys()) + 1
-        batch.save_dictionary(chardict,charcount,'%s/dict.pkl' % save_path)
+        # transfer
+        if TRANSFER != None:
+            params = load_params_shared(TRANSFER)
+            with open('%s/dict.pkl' % TRANSFER.rsplit('/',1)[0], 'rb') as f:
+                chardict = pkl.load(f)
+            n_char = len(chardict.keys()) + 1
+            shutil.copyfile('%s/dict.pkl' % TRANSFER.rsplit('/',1)[0], '%s/dict.pkl' % save_path)
+        else:
+            # Build dictionaries from training data
+            chardict, charcount = batch.build_dictionary(Xt)
+            n_char = len(chardict.keys()) + 1
+            batch.save_dictionary(chardict,charcount,'%s/dict.pkl' % save_path)
+            # params
+            params = init_params(n_chars=n_char)
+        
         labeldict, labelcount = batch.build_label_dictionary(yt)
-        n_classes = min(len(labeldict.keys()) + 1, MAX_CLASSES)
         batch.save_dictionary(labeldict, labelcount, '%s/label_dict.pkl' % save_path)
 
-        # params
-        params = init_params(n_chars=n_char)
+        n_classes = min(len(labeldict.keys()) + 1, MAX_CLASSES)
+
+        # classification params
         params['W_cl'] = theano.shared(np.random.normal(loc=0., scale=SCALE, size=(WDIM,n_classes)).astype('float32'), name='W_cl')
         params['b_cl'] = theano.shared(np.zeros((n_classes)).astype('float32'), name='b_cl')
 
