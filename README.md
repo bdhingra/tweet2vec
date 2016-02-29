@@ -50,20 +50,20 @@ Training
 For each model enter the appropriate settings in settings.py.
 
 - Word model:
-    ```sh
+    ```
         python char_word.py training_file validation_file model_save_path
     ```
 - 1 Layer model:
-    ```sh
+    ```
         python char.py training_file validation_file model_save_path
     ```
 - 2 Layer model:
-    ```sh
+    ```
         python char_c2w2s.py training_file validation_file model_save_path
     ```
 
 Training will be performed for the number of epochs specified in settings.py. Choose the best model by tracking the validation cost output on the screen. You can redirect the outputs to a file and run the following to see training and validation errors after each epoch:
-    ```sh
+    ```
         grep Training < log_file
     ```
 
@@ -71,21 +71,21 @@ Testing
 ========================
 First, generate predictions over the test set (make sure the settings match training when running the following) -
 - Word model:
-    ```sh
+    ```
         python test_word.py test_file model_save_path result_save_path epoch_num
     ```
     Epoch number denotes the model after the specific training epoch that you want to generate predictions from. Omit this to test on last saved model.
 - 1 Layer model:
-    ```sh
+    ```
         python test.py test_file model_save_path result_save_path epoch_num
     ```
 - 2 Layer model:
-    ```sh
+    ```
         python test_c2w2s.py test_file model_save_path result_save_path epoch_num
     ```
 
 Next, run the evaluation script to generate performance metrics - 
-    ```sh
+    ```
         python eval.py result_save_path model_save_path
     ```
 
