@@ -18,6 +18,15 @@ from collections import OrderedDict
 from t2v import tweet2vec, init_params, load_params_shared
 from settings import NUM_EPOCHS, N_BATCH, MAX_LENGTH, N_CHAR, CHAR_DIM, SCALE, C2W_HDIM, WDIM, MAX_CLASSES, LEARNING_RATE, DISPF, SAVEF, N_VAL, REGULARIZATION, RELOAD_DATA, RELOAD_MODEL, DEBUG, MOMENTUM, TRANSFER
 
+T1 = 0.01
+T2 = 0.0001
+
+def schedule(lr, mu):
+    print("Updating Schedule...")
+    lr = max(1e-5,lr/2)
+    #mu = mu - 0.05
+    return lr, mu
+
 def tnorm(tens):
     '''
     Tensor Norm
@@ -38,6 +47,7 @@ def print_params(params):
         print("Param {} = {}".format(kk, vv.get_value()))
 
 def main(train_path,val_path,save_path,num_epochs=NUM_EPOCHS):
+    global T1
 
     # save settings
     shutil.copyfile('settings.py','%s/settings.txt'%save_path)
@@ -156,6 +166,7 @@ def main(train_path,val_path,save_path,num_epochs=NUM_EPOCHS):
     print("Training...")
     uidx = 0
     start = time.time()
+    valcosts = []
     try:
 	for epoch in range(num_epochs):
 	    n_samples = 0
@@ -163,12 +174,29 @@ def main(train_path,val_path,save_path,num_epochs=NUM_EPOCHS):
 	    print("Epoch {}".format(epoch))
 
             # learning schedule
-            if epoch > 0 and epoch % 5 == 0:
-                print("Updating Schedule...")
-                lr = max(1e-5,lr/2)
-                mu = mu - 0.05
-                updates = lasagne.updates.nesterov_momentum(cost, lasagne.layers.get_all_params(net), lr, momentum=mu)
-                train = theano.function(inps,cost,updates=updates)
+            if len(valcosts) > 1:
+                change = (valcosts[-2]-valcosts[-1])/abs(valcosts[-2])
+                if change < T1:
+                    lr, mu = schedule(lr, mu)
+                    updates = lasagne.updates.nesterov_momentum(cost, lasagne.layers.get_all_params(net), lr, momentum=mu)
+                    train = theano.function(inps,cost,updates=updates)
+                    T1 = T1/2
+
+            # stopping criterion
+            if len(valcosts) > 6:
+                deltas = []
+                for i in range(5):
+                    deltas.append((valcosts[-i-2]-valcosts[-i-1])/abs(valcosts[-i-2]))
+                if sum(deltas)/len(deltas) < T2:
+                    break
+
+            # learning schedule
+            #if epoch > 0 and epoch % 5 == 0:
+            #    print("Updating Schedule...")
+            #    lr = max(1e-5,lr/2)
+            #    mu = mu - 0.05
+            #    updates = lasagne.updates.nesterov_momentum(cost, lasagne.layers.get_all_params(net), lr, momentum=mu)
+            #    train = theano.function(inps,cost,updates=updates)
 
             ud_start = time.time()
 	    for xr,y in train_iter:
@@ -237,6 +265,7 @@ def main(train_path,val_path,save_path,num_epochs=NUM_EPOCHS):
             regularization_cost = reg_val()
 	    print("Epoch {} Training Cost {} Validation Cost {} Regularization Cost {}".format(epoch, train_cost/n_samples, validation_cost/n_val_samples, regularization_cost))
 	    print("Seen {} samples.".format(n_samples))
+            valcosts.append(validation_cost/n_val_samples)
 
             for kk,vv in params.iteritems():
                 print("Param {} Epoch {} Max {} Min {}".format(kk, epoch, np.max(vv.get_value()), np.min(vv.get_value())))
