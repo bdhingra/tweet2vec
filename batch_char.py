@@ -3,7 +3,7 @@ import cPickle as pkl
 import codecs
 
 from collections import OrderedDict
-from settings import MAX_LENGTH, MAX_SEQ_LENGTH, MAX_WORD_LENGTH
+from settings_char import MAX_LENGTH
 
 class BatchTweets():
 
@@ -55,26 +55,6 @@ class BatchTweets():
 
     def __iter__(self):
         return self
-
-def prepare_data_c2w2s(seqs_x, chardict, n_chars=1000):
-    """
-    Put the data into format useable by the model
-    """
-    n_samples = len(seqs_x)
-    x = np.zeros((n_samples,MAX_SEQ_LENGTH,MAX_WORD_LENGTH)).astype('int32')
-    x_mask = np.zeros((n_samples,MAX_SEQ_LENGTH,MAX_WORD_LENGTH)).astype('float32')
-
-    # Split words and replace by indices
-    for seq_id, cc in enumerate(seqs_x):
-        words = cc.split()
-        for word_id, word in enumerate(words):
-            if word_id >= MAX_SEQ_LENGTH:
-                break
-            c_len = min(MAX_WORD_LENGTH, len(word))
-            x[seq_id,word_id,:c_len] = [chardict[c] if c in chardict and chardict[c] < n_chars else 0 for c in list(word)[:c_len]]
-            x_mask[seq_id,word_id,:c_len] = 1.
-
-    return np.expand_dims(x,axis=3), x_mask
 
 def prepare_data(seqs_x, chardict, n_chars=1000):
     """
@@ -146,3 +126,27 @@ def build_label_dictionary(targets):
         labeldict[labels[sidx]] = idx + 1
 
     return labeldict, labelcount
+
+'''
+Obsolete
+'''
+def prepare_data_c2w2s(seqs_x, chardict, n_chars=1000):
+    """
+    Put the data into format useable by the model
+    """
+    n_samples = len(seqs_x)
+    x = np.zeros((n_samples,MAX_SEQ_LENGTH,MAX_WORD_LENGTH)).astype('int32')
+    x_mask = np.zeros((n_samples,MAX_SEQ_LENGTH,MAX_WORD_LENGTH)).astype('float32')
+
+    # Split words and replace by indices
+    for seq_id, cc in enumerate(seqs_x):
+        words = cc.split()
+        for word_id, word in enumerate(words):
+            if word_id >= MAX_SEQ_LENGTH:
+                break
+            c_len = min(MAX_WORD_LENGTH, len(word))
+            x[seq_id,word_id,:c_len] = [chardict[c] if c in chardict and chardict[c] < n_chars else 0 for c in list(word)[:c_len]]
+            x_mask[seq_id,word_id,:c_len] = 1.
+
+    return np.expand_dims(x,axis=3), x_mask
+

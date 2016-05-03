@@ -1,7 +1,3 @@
-'''
-Tweet2Vec classifier trainer
-'''
-
 import numpy as np
 import lasagne
 import theano
@@ -12,15 +8,15 @@ import batch_word as batch
 import time
 import cPickle as pkl
 import io
+import evaluate
 
 from collections import OrderedDict
-from t2v import tweet2vec, init_params, load_params
-from settings import NUM_EPOCHS, N_BATCH, MAX_LENGTH, N_CHAR, CHAR_DIM, SCALE, C2W_HDIM, WDIM, MAX_CLASSES, LEARNING_RATE, DISPF, SAVEF, N_VAL, REGULARIZATION, RELOAD_DATA, RELOAD_MODEL
+from w2v import tweet2vec, load_params
+from settings_word import N_BATCH, N_WORD, MAX_CLASSES
 
 def classify(tweet, t_mask, params, n_classes, n_chars):
     # tweet embedding
     emb_layer = tweet2vec(tweet, t_mask, params, n_chars)
-
     # Dense layer for classes
     l_dense = lasagne.layers.DenseLayer(emb_layer, n_classes, W=params['W_cl'], b=params['b_cl'], nonlinearity=lasagne.nonlinearities.softmax)
 
@@ -35,7 +31,6 @@ def main(args):
         m_num = int(args[3])
 
     print("Preparing Data...")
-
     # Test data
     Xt = []
     yt = []
@@ -48,33 +43,32 @@ def main(args):
     # Model
     print("Loading model params...")
     if len(args)>3:
+        print 'Loading %s/model_%d.npz' % (model_path,m_num)
         params = load_params('%s/model_%d.npz' % (model_path,m_num))
     else:
-        params = load_params('%s/model.npz' % model_path)
+        print 'Loading %s/best_model.npz' % model_path
+        params = load_params('%s/best_model.npz' % model_path)
 
     print("Loading dictionaries...")
     with open('%s/dict.pkl' % model_path, 'rb') as f:
         chardict = pkl.load(f)
     with open('%s/label_dict.pkl' % model_path, 'rb') as f:
         labeldict = pkl.load(f)
-    n_char = min(len(chardict.keys()) + 1, N_CHAR)
+    n_char = min(len(chardict.keys()) + 1, N_WORD)
     n_classes = min(len(labeldict.keys()) + 1, MAX_CLASSES)
 
     # iterators
     test_iter = batch.BatchTweets(Xt, yt, labeldict, batch_size=N_BATCH, max_classes=MAX_CLASSES, test=True)
 
     print("Building network...")
-
     # Tweet variables
     tweet = T.itensor3()
     targets = T.imatrix()
-
     # masks
     t_mask = T.fmatrix()
 
     # network for prediction
-    predictions = classify(tweet, t_mask, params, n_classes, n_char)[0]
-    embeddings = classify(tweet, t_mask, params, n_classes, n_char)[1]
+    predictions, embeddings = classify(tweet, t_mask, params, n_classes, n_char)
 
     # Theano function
     print("Compiling theano functions...")
@@ -110,6 +104,6 @@ def main(args):
     with open('%s/targets.pkl'%save_path,'w') as f:
         pkl.dump(out_target,f)
 
-
 if __name__ == '__main__':
     main(sys.argv[1:])
+    evaluate.main(sys.argv[3],sys.argv[2])

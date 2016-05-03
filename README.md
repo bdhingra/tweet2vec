@@ -1,3 +1,4 @@
+<!---
 Prerequisites
 ======================
 - Python 2.7
@@ -92,3 +93,4 @@ Next, run the evaluation script to generate performance metrics -
 Contact
 ==========================
 Report bugs and missing info to bdhingraATandrewDOTcmuDOTedu (replace AT, DOT appropriately).
+--->

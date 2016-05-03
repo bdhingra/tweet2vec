@@ -1,30 +1,26 @@
-'''
-Tweet2Vec classifier trainer
-'''
-
 import numpy as np
 import lasagne
 import theano
 import theano.tensor as T
 import random
 import sys
-import batch
+import batch_char as batch
 import time
 import cPickle as pkl
 import io
+import evaluate
 
 from collections import OrderedDict
-from t2v import char2word2vec, load_params
-from settings import NUM_EPOCHS, N_BATCH, MAX_LENGTH, N_CHAR, SCALE, SDIM, MAX_CLASSES, LEARNING_RATE, DISPF, SAVEF, REGULARIZATION, RELOAD_DATA, RELOAD_MODEL
+from t2v import tweet2vec, init_params, load_params
+from settings_char import N_BATCH, MAX_LENGTH, MAX_CLASSES
 
 def classify(tweet, t_mask, params, n_classes, n_chars):
     # tweet embedding
-    emb_layer = char2word2vec(tweet, t_mask, params, n_chars)
-
+    emb_layer = tweet2vec(tweet, t_mask, params, n_chars)
     # Dense layer for classes
-    l_dense = lasagne.layers.DenseLayer(emb_layer[2], n_classes, W=params['W_cl'], b=params['b_cl'], nonlinearity=lasagne.nonlinearities.softmax)
+    l_dense = lasagne.layers.DenseLayer(emb_layer, n_classes, W=params['W_cl'], b=params['b_cl'], nonlinearity=lasagne.nonlinearities.softmax)
 
-    return lasagne.layers.get_output(l_dense), emb_layer[0]
+    return lasagne.layers.get_output(l_dense), lasagne.layers.get_output(emb_layer)
 
 def main(args):
 
@@ -35,7 +31,6 @@ def main(args):
         m_num = int(args[3])
 
     print("Preparing Data...")
-
     # Test data
     Xt = []
     yt = []
@@ -50,7 +45,7 @@ def main(args):
     if len(args)>3:
         params = load_params('%s/model_%d.npz' % (model_path,m_num))
     else:
-        params = load_params('%s/model.npz' % model_path)
+        params = load_params('%s/best_model.npz' % model_path)
 
     print("Loading dictionaries...")
     with open('%s/dict.pkl' % model_path, 'rb') as f:
@@ -64,13 +59,12 @@ def main(args):
     test_iter = batch.BatchTweets(Xt, yt, labeldict, batch_size=N_BATCH, max_classes=MAX_CLASSES, test=True)
 
     print("Building network...")
-
     # Tweet variables
-    tweet = T.itensor4()
+    tweet = T.itensor3()
     targets = T.imatrix()
 
     # masks
-    t_mask = T.ftensor3()
+    t_mask = T.fmatrix()
 
     # network for prediction
     predictions = classify(tweet, t_mask, params, n_classes, n_char)[0]
@@ -88,7 +82,7 @@ def main(args):
     out_emb = []
     out_target = []
     for xr,y in test_iter:
-        x, x_m = batch.prepare_data_c2w2s(xr, chardict, n_chars=n_char)
+        x, x_m = batch.prepare_data(xr, chardict, n_chars=n_char)
         p = predict(x,x_m)
         e = encode(x,x_m)
         ranks = np.argsort(p)[:,::-1]
@@ -113,3 +107,4 @@ def main(args):
 
 if __name__ == '__main__':
     main(sys.argv[1:])
+    evaluate.main(sys.argv[3],sys.argv[2])
