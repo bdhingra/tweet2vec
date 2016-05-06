@@ -16,7 +16,7 @@ import shutil
 
 from collections import OrderedDict
 from w2v import tweet2vec, init_params, load_params_shared
-from settings_word import NUM_EPOCHS, N_BATCH, N_WORD, SCALE, WDIM, MAX_CLASSES, LEARNING_RATE, DISPF, SAVEF, REGULARIZATION, RELOAD_MODEL, MOMENTUM
+from settings_word import NUM_EPOCHS, N_BATCH, N_WORD, SCALE, WDIM, MAX_CLASSES, LEARNING_RATE, DISPF, SAVEF, REGULARIZATION, RELOAD_MODEL, MOMENTUM, SCHEDULE
 from evaluate import precision
 
 T1 = 0.01
@@ -145,7 +145,7 @@ def main(train_path,val_path,save_path,num_epochs=NUM_EPOCHS):
 	    print("Epoch {}".format(epoch))
 
             # learning schedule
-            if len(valcosts) > 1:
+            if len(valcosts) > 1 and SCHEDULE:
                 change = (valcosts[-1]-valcosts[-2])/abs(valcosts[-2])
                 if change < T1:
                     lr, mu = schedule(lr, mu)

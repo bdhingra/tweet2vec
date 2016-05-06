@@ -17,7 +17,7 @@ WDIM = 500
 # Number of classes
 MAX_CLASSES = 6000
 # Learning rate
-LEARNING_RATE = .01
+LEARNING_RATE = 1e-4
 # Display frequency
 DISPF = 5
 # Save frequency
@@ -31,4 +31,6 @@ MOMENTUM = 0.9
 # clipping
 GRAD_CLIP = 5.
 # use bias
-BIAS = True
+BIAS = False
+# use schedule
+SCHEDULE = False

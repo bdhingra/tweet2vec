@@ -6,7 +6,7 @@ fulltestdata="data/50K_combined_test"
 raretestdata="data/2K_rare_test"
 freqtestdata="data/2K_freq_test"
 
-exp="final_word_bias"
+exp="final_word_noschedule"
 modelpath="model/$exp/"
 resultpath="result/$exp/"
 
