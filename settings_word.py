@@ -34,3 +34,5 @@ RELOAD_MODEL = False
 MOMENTUM = 0.9
 # clipping
 GRAD_CLIP = 5.
+# use bias
+BIAS = True
