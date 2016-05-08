@@ -6,7 +6,7 @@ import random
 import pdb
 
 from collections import OrderedDict
-from settings_char import N_BATCH, MAX_LENGTH, CHAR_DIM, SCALE, C2W_HDIM, WDIM, GRAD_CLIP
+from settings_char import N_BATCH, MAX_LENGTH, CHAR_DIM, SCALE, C2W_HDIM, WDIM, GRAD_CLIP, BIAS
 
 def init_params(n_chars):
     '''
@@ -46,6 +46,9 @@ def init_params(n_chars):
     # dense
     params['W_c2w_df'] = theano.shared(np.random.normal(loc=0., scale=SCALE, size=(C2W_HDIM,WDIM)).astype('float32'), name='W_c2w_df')
     params['W_c2w_db'] = theano.shared(np.random.normal(loc=0., scale=SCALE, size=(C2W_HDIM,WDIM)).astype('float32'), name='W_c2w_db')
+    if BIAS:
+        params['b_c2w_df'] = theano.shared(np.zeros((WDIM)).astype('float32'), name='b_c2w_db')
+        params['b_c2w_db'] = theano.shared(np.zeros((WDIM)).astype('float32'), name='b_c2w_df')
 
     return params
 
@@ -81,8 +84,12 @@ def tweet2vec(tweet,mask,params,n_chars):
     l_b_source = lasagne.layers.SliceLayer(l_bgru_source, 0, 1)
 
     # Dense layer
-    l_fdense_source = lasagne.layers.DenseLayer(l_f_source, WDIM, W=params['W_c2w_df'], b=None, nonlinearity=None)
-    l_bdense_source = lasagne.layers.DenseLayer(l_b_source, WDIM, W=params['W_c2w_db'], b=None, nonlinearity=None)
+    if BIAS:
+        l_fdense_source = lasagne.layers.DenseLayer(l_f_source, WDIM, W=params['W_c2w_df'], b=params['b_c2w_df'], nonlinearity=None)
+        l_bdense_source = lasagne.layers.DenseLayer(l_b_source, WDIM, W=params['W_c2w_db'], b=params['b_c2w_db'], nonlinearity=None)
+    else:
+        l_fdense_source = lasagne.layers.DenseLayer(l_f_source, WDIM, W=params['W_c2w_df'], b=None, nonlinearity=None)
+        l_bdense_source = lasagne.layers.DenseLayer(l_b_source, WDIM, W=params['W_c2w_db'], b=None, nonlinearity=None)
     l_c2w_source = lasagne.layers.ElemwiseSumLayer([l_fdense_source, l_bdense_source], coeffs=1)
 
     return l_c2w_source

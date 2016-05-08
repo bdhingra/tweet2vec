@@ -1,12 +1,12 @@
 #!/bin/bash
 
-traindata="data/acl/medium_500_19K/train"
-valdata="data/acl/medium_500_19K/10K_combined_val"
-fulltestdata="data/acl/medium_500_19K/50K_combined_test"
-raretestdata="data/acl/medium_500_19K/2K_rare_test"
-freqtestdata="data/acl/medium_500_19K/2K_freq_test"
+traindata="data/train"
+valdata="data/10K_combined_val"
+fulltestdata="data/50K_combined_test"
+raretestdata="data/2K_rare_test"
+freqtestdata="data/2K_freq_test"
 
-exp="final_word"
+exp="final_word_bias"
 modelpath="model/$exp/"
 resultpath="result/$exp/"
 
