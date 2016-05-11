@@ -31,7 +31,8 @@ Make sure to add `THEANO_FLAGS=device=cpu` before any command if you are running
 
 Contributors
 ==========================
-Bhuwan Dhingra, Dylan Fitzpatrick, Zhong Zhou, Michael Muehl
+Bhuwan Dhingra, Dylan Fitzpatrick, Zhong Zhou, Michael Muehl. Special thanks to Yun Fu for the preprocessing JAR-file.
+
 Report bugs and missing info to bdhingraATandrewDOTcmuDOTedu (replace AT, DOT appropriately).
 
 <!---
