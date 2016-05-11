@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # specify data file here
-datafile="data/tweets"
+datafile="../misc/encoder_example.txt"
 
 # specify model path here
-modelpath="model/tweet2vec/"
+modelpath="best_model/"
 
 # specify result path here
-resultpath="result/tweet2vec/"
+resultpath="result/"
 
 mkdir -p $resultpath
 

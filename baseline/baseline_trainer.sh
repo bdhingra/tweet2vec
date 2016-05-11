@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # specify training and validation files here
-traindata="data/train"
-valdata="data/10K_combined_val"
+traindata="../misc/trainer_example.txt"
+valdata="../misc/tester_example.txt"
 
 # specify model name here
 exp="baseline"

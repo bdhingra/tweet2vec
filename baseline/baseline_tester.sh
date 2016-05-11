@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # specify test file here
-fulltestdata="data/50K_combined_test"
+fulltestdata="../misc/tester_example.txt"
 
 # specify model path here
 modelpath="model/baseline/"
 
 # specify result path here
-resultpath="result/baseline/"
+resultpath="result/"
 
 mkdir -p $resultpath
 

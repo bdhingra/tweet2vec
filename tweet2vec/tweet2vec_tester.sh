@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # specify test file here
-fulltestdata="data/50K_combined_test"
+fulltestdata="../misc/tester_example.txt"
 
 # specify model path here
-modelpath="model/tweet2vec/"
+modelpath="best_model/"
 
 # specify result path here
-resultpath="result/tweet2vec/"
+resultpath="result/"
 
 mkdir -p $resultpath
 
