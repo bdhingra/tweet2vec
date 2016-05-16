@@ -35,6 +35,10 @@ Bhuwan Dhingra, Dylan Fitzpatrick, Zhong Zhou, Michael Muehl. Special thanks to 
 
 Report bugs and missing info to bdhingraATandrewDOTcmuDOTedu (replace AT, DOT appropriately).
 
+License
+==========================
+[Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
 <!---
 1. Start with files containing tweets in json format. Ex:
 
