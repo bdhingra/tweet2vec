@@ -6,8 +6,12 @@ import sys
 import cPickle as pkl
 import io
 
+import matplotlib.pyplot as plt
+
 K1 = 1
 K2 = 10
+
+HIST = False
 
 def precision(p, t, k):
     '''
@@ -50,7 +54,7 @@ def meanrank(p, t):
             if currrank < minrank:
                 minrank = currrank
         res[idx] = minrank
-    return np.mean(res)
+    return np.mean(res), res
 
 def readable_predictions(p, t, d, k, labeldict):
     out = []
@@ -78,9 +82,18 @@ def main(result_path, dict_path):
         for line in readable:
             f.write(line)
 
+    meanr, allr = meanrank(p,t)
     print("Precision @ {} = {}".format(K1,precision(p,t,K1)))
     print("Recall @ {} = {}".format(K2,recall(p,t,K2)))
-    print("Mean rank = {}".format(meanrank(p,t)))
+    print("Mean rank = {}".format(meanr))
+
+    # histogram
+    if HIST:
+        hist, bins = np.histogram(allr, bins=50)
+        width = 0.7 * (bins[1] - bins[0])
+        center = (bins[:-1] + bins[1:]) / 2
+        plt.bar(center, hist, align='center', width=width)
+        plt.show()
 
 if __name__ == '__main__':
     main(sys.argv[1],sys.argv[2])

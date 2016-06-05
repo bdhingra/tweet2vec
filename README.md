@@ -27,10 +27,23 @@ Unfortunately we are not allowed to release the data used in experiments from th
 
 Note
 ==========================
-Make sure to add `THEANO_FLAGS=device=cpu` before any command if you are running on a CPU.
+Make sure to add `THEANO_FLAGS=device=cpu,floatX=float32` before any command if you are running on a CPU.
 
 Contributors
 ==========================
 Bhuwan Dhingra, Dylan Fitzpatrick, Zhong Zhou, Michael Muehl. Special thanks to Yun Fu for the preprocessing JAR-file.
+
+If you end up using this code, please cite the following paper - 
+
+Dhingra, Bhuwan, Zhong Zhou, Dylan Fitzpatrick, Michael Muehl, and William W. Cohen. "Tweet2Vec: Character-Based Distributed Representations for Social Media." ACL (2016).
+
+```
+@article{dhingra2016tweet2vec,
+  title={Tweet2Vec: Character-Based Distributed Representations for Social Media},
+  author={Dhingra, Bhuwan and Zhou, Zhong and Fitzpatrick, Dylan and Muehl, Michael and Cohen, William W},
+  journal={ACL},
+  year={2016}
+}
+```
 
 Report bugs and missing info to bdhingraATandrewDOTcmuDOTedu (replace AT, DOT appropriately).
