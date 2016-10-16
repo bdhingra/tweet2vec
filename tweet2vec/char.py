@@ -163,7 +163,7 @@ def main(train_path,val_path,save_path,num_epochs=NUM_EPOCHS):
 		n_samples +=len(xr)
 		uidx += 1
 		x, x_m = batch.prepare_data(xr, chardict, n_chars=n_char)
-		if x==None:
+		if x is None:
 		    print("Minibatch with zero samples under maxlength.")
 		    uidx -= 1
 		    continue
@@ -192,7 +192,7 @@ def main(train_path,val_path,save_path,num_epochs=NUM_EPOCHS):
             targs = []
 	    for xr,y in val_iter:
 		x, x_m = batch.prepare_data(xr, chardict, n_chars=n_char)
-		if x==None:
+		if x is None:
                     print("Validation: Minibatch with zero samples under maxlength.")
 		    continue
 
