@@ -38,11 +38,16 @@ If you end up using this code, please cite the following paper -
 Dhingra, Bhuwan, Zhong Zhou, Dylan Fitzpatrick, Michael Muehl, and William W. Cohen. "Tweet2Vec: Character-Based Distributed Representations for Social Media." ACL (2016).
 
 ```
-@article{dhingra2016tweet2vec,
-  title={Tweet2Vec: Character-Based Distributed Representations for Social Media},
-  author={Dhingra, Bhuwan and Zhou, Zhong and Fitzpatrick, Dylan and Muehl, Michael and Cohen, William W},
-  journal={ACL},
-  year={2016}
+@InProceedings{dhingra-EtAl:2016:P16-2,
+  author    = {Dhingra, Bhuwan  and  Zhou, Zhong  and  Fitzpatrick, Dylan  and  Muehl, Michael  and  Cohen, William},
+  title     = {Tweet2Vec: Character-Based Distributed Representations for Social Media},
+  booktitle = {Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics (Volume 2: Short Papers)},
+  month     = {August},
+  year      = {2016},
+  address   = {Berlin, Germany},
+  publisher = {Association for Computational Linguistics},
+  pages     = {269--274},
+  url       = {http://anthology.aclweb.org/P16-2044}
 }
 ```
 

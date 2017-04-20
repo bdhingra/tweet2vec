@@ -1,0 +1,8 @@
+*.pyc
+data/
+model/
+logs/
+result/
+gpig_views/
+hyperparams/
+report/
